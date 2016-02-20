@@ -1,0 +1,10 @@
+Package: packMatt
+Type: Package
+Title: PackMatt
+Version: 0.1.0
+Author: Matt Delaney
+Maintainer: <mdelaney@2u.com>
+Description: A very poor mans port of python virtualenv to R.
+License: The Iron Price
+LazyData: TRUE
+RoxygenNote: 5.0.1

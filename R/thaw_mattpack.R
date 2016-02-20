@@ -46,7 +46,7 @@ download_pkg <- function(pkg, download_dir, quiet){
 
   if (!dir.exists(download_dir)) {
     message(sprintf("%s Dir not found...creating...", download_dir))
-    dir.create(download_dir)
+    dir.create(download_dir, recursive = T)
     if (!dir.exists(download_dir)) {
       stop("Error: Permissions are incorrect on mattlib directory")
     }

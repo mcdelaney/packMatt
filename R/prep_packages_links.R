@@ -13,17 +13,26 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
 
     pkg <- as.list(pkg)
 
-    pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$name &
-                              avail_pkgs$Version == pkg$version,]$Repository
-    if (length(pkg_match) == 1) {
-      pkg$link <- paste0(pkg_match, "/", pkg$name, "_", pkg$version, ".tar.gz")
+    if ((!is.null(pkg$GithubInfo) && pkg$GithubInfo != "") || (pkg$Repository != "CRAN" && grepl("github", x = pkg$URL))) {
+      if (is.null(pkg$GithubInfo) || pkg$GithubInfo == "") {
+        pkg$link <- pkg$URL
+      }else{
+        pkg$link <- paste0('https://github.com/', pkg$GithubInfo, ".tar.gz")
+      }
     }else{
-      pkg$link <- paste0("http://cran.rstudio.com/src/contrib/", "Archive/",
-                        pkg$name, "/", pkg$name, "_", pkg$version, ".tar.gz")
+      pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$name &
+                                avail_pkgs$Version == pkg$version,]$Repository
+      if (length(pkg_match) == 1) {
+        pkg$link <- paste0(pkg_match, "/", pkg$name, "_", pkg$version, ".tar.gz")
+      }else{
+        pkg$link <- paste0("http://cran.rstudio.com/src/contrib/", "Archive/",
+                           pkg$name, "/", pkg$name, "_", pkg$version, ".tar.gz")
+      }
     }
 
     return(pkg)
   }
+
   options(repos = "https://cran.rstudio.com")
   avail_pkgs <- data.frame(available.packages())
   info <- apply(packages, 1, FUN = get_pkg_sources, avail_pkgs = avail_pkgs)

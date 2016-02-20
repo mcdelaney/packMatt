@@ -6,7 +6,7 @@
 #'
 
 install_mattpack_repo <- function(mattlib_loc = 'mattlib',
-                                  lock_file_lock = 'mattpack.lock', git_pat = NULL){
+                                  lock_file_loc = 'mattpack.lock', git_pat = NULL){
 
   mattlib_loc <- normalizePath(mattlib_loc)
 

@@ -7,11 +7,8 @@ prep_test_lib <- function(test_lib = "mattlib"){
 }
 
 test_the_stuff <- function(test_lib = 'mattlib'){
-
   lock_file_loc <- "mattpack.lock"
-  # src_download_loc <- sprintf("%s/src_test", test_lib)
   mattlib_loc = test_lib
-
   freeze_packages(lock_file_loc = lock_file_loc)
 
   thaw_results <- thaw_mattpack(lock_file_loc = lock_file_loc)
@@ -21,10 +18,6 @@ test_the_stuff <- function(test_lib = 'mattlib'){
                                              lock_file_loc = lock_file_loc))
 }
 
-library(withr); library(RPostgreSQL); library(stringi)
-
+library(withr); library(RPostgreSQL); library(dplyr)
 prep_test_lib(test_lib = TEST_LIB)
-
 test_the_stuff()
-
-withr::with_libpaths(new = TEST_LIB, installed.packages())

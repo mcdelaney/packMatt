@@ -19,7 +19,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
   loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
     as.character(packageDescription(X)$Version)}))
 
-  for (item in c("Depends", "Imports", "URL", "Repository")) {
+  for (item in c("Depends", "Imports", "URL", "Repository", "Github_Info")) {
     loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
                              item = item)
   }
@@ -35,7 +35,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
     loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
       as.character(packageDescription(X)$Version)}))
 
-    for (item in c("Depends", "Imports", "URL", "Repository")) {
+    for (item in c("Depends", "Imports", "URL", "Repository", "Github_Info")) {
       loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
                                item = item)
     }
@@ -56,15 +56,40 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
 extract_package_deps <- function(pkg_name, item){
   description <- packageDescription(pkg_name)
-  if (item %in% names(description)) {
-    dat <- gsub("[\n]", " ", as.character(description[[item]]))
 
+  if ("Github_Info" == item) {
+    if (all(c("GithubRepo", "GithubUsername") %in% names(description))) {
+      return(paste0(description[['GithubUsername']], "/", description[['GithubRepo']]))
+    }else{
+      return("")
+    }
+  }
+
+  if (item %in% names(description)) {
+
+    dat <- gsub("[\n]", " ", as.character(description[[item]]))
     dat <- strsplit(dat, split = ", ")[[1]]
+
+    if (item == "URL" && length(dat) > 1) {
+      dat <- unlist(lapply(X= dat, FUN = function(X){
+        if (grepl("github", X)){
+          return(X)
+        }else{
+          return("")
+        }
+      }))
+
+      if (all(is.na(dat))){
+        dat <- ""
+      }else{
+        dat <- dat[!is.na(dat)][[1]]
+      }
+    }
 
     dat <- unlist(lapply(X = dat, FUN = function(X){
       dat <- gsub("\\s\\(.*", "", X)
       gsub("\\s", "", dat)
-      }))
+    }))
 
     return(list(dat))
   }else{

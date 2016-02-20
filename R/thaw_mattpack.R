@@ -42,7 +42,7 @@ download_pkg <- function(pkg, download_dir, quiet){
 
   src_file <- paste0(pkg$name, "_", pkg$version, ".tar.gz")
 
-  full_dest_path <- paste(download_dir, pkg$name, src_file, sep = "/")
+  src_loc <- paste(download_dir, pkg$name, src_file, sep = "/")
 
   if (!dir.exists(download_dir)) {
     message(sprintf("%s Dir not found...creating...", download_dir))
@@ -58,16 +58,15 @@ download_pkg <- function(pkg, download_dir, quiet){
     dir.create(paste0(download_dir, "/", pkg$name))
   }
 
-  if (file.exists(full_dest_path) && file.size(full_dest_path) > 0) {
+  if (file.exists(src_loc) && file.size(src_loc) > 0) {
     message(sprintf("File for %s already exists...skipping....", pkg$name))
     return("success")
   }
 
   message(sprintf("Downloading %s from: %s...", pkg$name, pkg$link))
-  result <- suppressWarnings(
-    try(download.file(pkg$link, full_dest_path, "wget", quiet = quiet)))
+  result <- suppressWarnings(try(download.file(pkg$link, src_loc, "wget", quiet = quiet)))
 
-  if (inherits(result, 'try-error') || result != 0) {
+  if ((inherits(result, 'try-error') || result != 0) && any(lapply(pkg$URL, FUN = grepl, pattern ="github"))) {
     message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
     result <- download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)
   }

@@ -3,6 +3,8 @@
 
 prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
 
+  lock_file_loc <- normalizePath(lock_file_loc)
+
   if (!file.exists(lock_file_loc)) { stop('lock file does not exist')}
 
   packages <- read.dcf(lock_file_loc)

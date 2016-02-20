@@ -9,6 +9,8 @@
 
 thaw_mattpack <- function(lock_file_loc, src_download_loc, quiet = TRUE){
 
+  lock_file_loc <- normalizePath(lock_file_loc)
+
   packages <- packMatt:::prep_package_links(lock_file_loc)
 
   if (length(packages) == 0) {

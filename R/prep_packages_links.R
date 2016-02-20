@@ -23,14 +23,9 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
     }
 
     return(pkg)
-    # return(list(name = pkg$name, version = pkg$version, link = dl_link,
-    #             type = pkg$type))
   }
 
-  # packages <- packrat:::readLockFilePackages("packrat/packrat.lock")
   avail_pkgs <- data.frame(available.packages())
-
   info <- apply(packages, 1, FUN = get_pkg_sources, avail_pkgs = avail_pkgs)
-
   return(info)
 }

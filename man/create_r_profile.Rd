@@ -4,6 +4,6 @@
 \alias{create_r_profile}
 \title{create_r_profile}
 \usage{
-create_r_profile(mattlib_loc)
+create_r_profile(mattlib_loc = "mattpack.lock")
 }
 

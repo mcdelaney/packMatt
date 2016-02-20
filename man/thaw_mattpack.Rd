@@ -4,12 +4,10 @@
 \alias{thaw_mattpack}
 \title{thaw_mattpack}
 \usage{
-thaw_mattpack(lock_file_loc, src_download_loc, quiet = TRUE)
+thaw_mattpack(lock_file_loc = "mattpack.lock", quiet = TRUE)
 }
 \arguments{
 \item{lock_file_loc}{Path to mattpack lock file.}
-
-\item{src_download_loc}{Directory where package source files should be downloaded.}
 
 \item{quiet}{Logical; Should download.file return verbose output? Optional.}
 }

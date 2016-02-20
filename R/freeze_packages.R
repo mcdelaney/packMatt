@@ -8,6 +8,8 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   options(stringsAsFactors = FALSE)
 
+  home_lib <- .Library
+
   loaded <- data.frame(name = search()[grepl("package:", x = search())])
 
   loaded <- data.frame(name = loaded[!loaded$name %in% "package:packMatt", ])
@@ -15,7 +17,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
   loaded$name <- gsub("package:", "", x = loaded$name)
 
   loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
-    as.character(packageVersion(X))}))
+    as.character(packageDescription(X)$Version)}))
 
   for (item in c("Depends", "Imports", "URL")) {
     loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
@@ -31,7 +33,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
   if (length(alldeps) > 0) {
     loaded <- data.frame(name = unique(c(alldeps, loaded$name)))
     loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
-      as.character(packageVersion(X))}))
+      as.character(packageDescription(X)$Version)}))
 
     for (item in c("Depends", "Imports", "URL")) {
       loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
@@ -41,7 +43,8 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   sess_info <- sessionInfo()
 
-  loaded$type <- ifelse(loaded$name %in% sess_info$basePkgs, "base", "external")
+  loaded$type <- ifelse(paste0(home_lib, "/",loaded$name) == find.package(loaded$name),
+                        "base", "external")
 
   loaded <- as.matrix(loaded)
 

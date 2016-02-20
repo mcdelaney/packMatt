@@ -4,16 +4,14 @@
 \alias{install_mattpack_repo}
 \title{install_mattpack_repo}
 \usage{
-install_mattpack_repo(src_download_loc, mattlib_loc, lock_file_loc,
-  git_pat = NULL)
+install_mattpack_repo(mattlib_loc = "mattlib",
+  lock_file_lock = "mattpack.lock", git_pat = NULL)
 }
 \arguments{
-\item{src_download_loc}{Location to where package src files are located.}
-
 \item{mattlib_loc}{Directory where src packages should be installed.}
 
-\item{lock_file_loc}{Location where mattpack lockfile is found.}
-
 \item{git_pat}{Github Pat.  Optional and only used if downloaded from a private repo.}
+
+\item{lock_file_loc}{Location where mattpack lockfile is found.}
 }
 

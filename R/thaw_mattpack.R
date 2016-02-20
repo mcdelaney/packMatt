@@ -2,12 +2,11 @@
 #'
 #' @title thaw_mattpack
 #' @param lock_file_loc Path to mattpack lock file.
-#' @param src_download_loc Directory where package source files should be downloaded.
 #' @param quiet Logical; Should download.file return verbose output? Optional.
 #' @export
 #'
 
-thaw_mattpack <- function(lock_file_loc, src_download_loc, quiet = TRUE){
+thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
 
   lock_file_loc <- normalizePath(lock_file_loc)
 
@@ -18,10 +17,10 @@ thaw_mattpack <- function(lock_file_loc, src_download_loc, quiet = TRUE){
   }
 
   results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
-                    download_dir = src_download_loc, quiet = quiet)
+                    download_dir = "mattlib/src", quiet = quiet)
   if (all(results == "success")) {
-    message("all packages returned successfully")
-    return("done")
+    message("All packages downloaded successfully..\n")
+    return("Done!")
   }else{
     stop("Error.... not all packages downloaded successfully")
   }

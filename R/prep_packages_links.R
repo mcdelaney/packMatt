@@ -24,8 +24,8 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
 
     return(pkg)
   }
-
-  avail_pkgs <- data.frame(available.packages(contriburl = "https://cran.rstudio.com"))
+  options(repos = "https://cran.rstudio.com")
+  avail_pkgs <- data.frame(available.packages())
   info <- apply(packages, 1, FUN = get_pkg_sources, avail_pkgs = avail_pkgs)
   return(info)
 }

@@ -13,11 +13,11 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
 
     pkg <- as.list(pkg)
 
-    if ((!is.null(pkg$GithubInfo) && pkg$GithubInfo != "") || (pkg$Repository != "CRAN" && grepl("github", x = pkg$URL))) {
-      if (is.null(pkg$GithubInfo) || pkg$GithubInfo == "") {
+    if ((!is.null(pkg$Github_Info) && pkg$Github_Info != "") | (pkg$Repository != "CRAN" && grepl("github", x = pkg$URL))) {
+      if (is.null(pkg$Github_Info) || pkg$Github_Info == "") {
         pkg$link <- pkg$URL
       }else{
-        pkg$link <- paste0('https://github.com/', pkg$GithubInfo, ".tar.gz")
+        pkg$link <- paste0('https://github.com/', pkg$Github_Info)
       }
     }else{
       pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$name &

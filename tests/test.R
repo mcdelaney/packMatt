@@ -18,6 +18,6 @@ test_the_stuff <- function(test_lib = 'mattlib'){
                                              lock_file_loc = lock_file_loc))
 }
 
-library(withr); library(RPostgreSQL); library(dplyr)
+library(withr); library(RPostgreSQL); library(dplyr); library(AnomalyDetection)
 prep_test_lib(test_lib = TEST_LIB)
 test_the_stuff()

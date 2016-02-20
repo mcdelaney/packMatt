@@ -1,7 +1,7 @@
 
-lock_file_loc <- "tests/mattpack.lock"
-src_download_loc <- "tests/src_test"
-mattlib_loc = "tests/mattlib"
+lock_file_loc <- "test-lib/mattpack.lock"
+src_download_loc <- "test-lib/src_test"
+mattlib_loc = "test-lib/mattlib"
 
 library(RPostgreSQL)
 library(dplyr)

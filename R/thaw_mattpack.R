@@ -17,7 +17,6 @@ thaw_mattpack <- function(lock_file_loc, src_download_loc, quiet = TRUE){
 
   results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
                     download_dir = src_download_loc, quiet = quiet)
-
   if (all(results == "success")) {
     message("all packages returned successfully")
     return("done")
@@ -61,9 +60,8 @@ download_pkg <- function(pkg, download_dir, quiet){
   }
 
   message(sprintf("Downloading %s from: %s...", pkg$name, pkg$link))
-  result <- try({
-  download.file(pkg$link, full_dest_path, "wget", quiet = quiet)
-  })
+  result <- try(download.file(pkg$link, full_dest_path, "wget", quiet = quiet))
+
   if (inherits(result, 'try-error') || result != 0) {
     message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
     result <- download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)

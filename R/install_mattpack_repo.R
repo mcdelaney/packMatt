@@ -42,5 +42,5 @@ install_mattpack_repo <- function(src_download_loc, mattlib_loc, lock_file_loc){
     stop("Not all packages installed successfully...exiting...")
   }
   message("All Packages Installed Successfully!")
-  return(results)
+  # return()
 }

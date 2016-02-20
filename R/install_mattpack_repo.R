@@ -8,7 +8,6 @@
 
 install_mattpack_repo <- function(src_download_loc, mattlib_loc, lock_file_loc, git_pat = NULL){
 
-  # mattlib_loc <- normalizePath(mattlib_loc)
   src_download_loc <- normalizePath(src_download_loc)
   lock_file_loc <- normalizePath(lock_file_loc)
 

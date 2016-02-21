@@ -73,13 +73,22 @@ download_pkg <- function(pkg, download_dir, quiet){
   #   result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
   # }
 
+  # if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
+  #     pkg$GithubUsername != "") {
+  #     message(sprintf("Cloning %s via git...", pkg$Package))
+  #     system(sprintf("git clone git@github.com:%s/%s.git", pkg$GithubUsername, pkg$GithubRepo))
+  #     system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
+  #     system(sprintf('rm -rf %s', pkg$GithubRepo))
+  #     result <- 0
+  # }
+
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       pkg$GithubUsername != "") {
-      message(sprintf("Cloning %s via git...", pkg$Package))
-      system(sprintf("git clone git@github.com:%s/%s.git", pkg$GithubUsername, pkg$GithubRepo))
-      system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
-      system(sprintf('rm -rf %s', pkg$GithubRepo))
-      result <- 0
+    message(sprintf("Cloning %s via git...", pkg$Package))
+    system(sprintf("wget https://github.com/%s/%s/archive/latest.tar.gz %s", pkg$GithubUsername, pkg$GithubRepo, src_loc))
+    # system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
+    # system(sprintf('rm -rf %s', pkg$GithubRepo))
+    result <- 0
   }
 
   if (result == 0) {

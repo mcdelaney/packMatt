@@ -7,7 +7,7 @@
 #'
 
 deploy_lib <- function(mattlib_loc = 'mattlib',
-                                  lock_file_loc = 'mattpack.lock', git_pat = NULL){
+                       lock_file_loc = 'mattpack.lock', git_pat = NULL){
 
   mattlib_loc <- normalizePath(mattlib_loc)
 
@@ -56,6 +56,8 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
                    install_loc = install_loc, src_loc = src_loc)
 
   if (!all(results == "success")) {
+    pkg_list <- as.character(packages[,"Package"])[results != 'success']
+    message(sprintf("Errors installing %s"), paste(pkg_list, collapse = "\n"))
     stop("Not all packages installed successfully...exiting...")
   }
   create_r_profile()

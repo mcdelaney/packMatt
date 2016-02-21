@@ -18,7 +18,8 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
     as.character(packageDescription(X)$Version)}))
-  attr_list <- c("Depends", "Imports", "URL", "Repository", "Github_Info", "GithubUser", "GithubRepo")
+  attr_list <- c("Depends", "Imports", "URL", "Repository", "Github_Info",
+                 "GithubUsername", "GithubRepo")
   for (item in attr_list) {
     loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
                              item = item)

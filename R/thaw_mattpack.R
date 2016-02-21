@@ -64,11 +64,18 @@ download_pkg <- function(pkg, download_dir, quiet){
   }
 
   message(sprintf("Downloading %s from: %s...", pkg$name, pkg$link))
-  result <- suppressWarnings(try(download.file(pkg$link, src_loc, "wget", quiet = quiet)))
+  result <- suppressWarnings(try(download.file(pkg$link, src_loc, "curl", quiet = quiet)))
 
-  if ((inherits(result, 'try-error') || result != 0) && any(lapply(pkg$URL, FUN = grepl, pattern ="github"))) {
+  if ((inherits(result, 'try-error') || result != 0) &&
+      any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
     message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
-    result <- download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)
+    result <- try({download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)})
+  }
+
+  if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUser) &&
+      !pkg$GithubUser != "") {
+      system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUser,
+                     pkg$GithubRepo, full_dest_path))
   }
 
   if (result == 0) {

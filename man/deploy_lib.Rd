@@ -5,7 +5,7 @@
 \title{deploy_lib}
 \usage{
 deploy_lib(mattlib_loc = "mattlib", lock_file_loc = "mattpack.lock",
-  git_pat = NULL)
+  git_pat = NULL, do_thaw = FALSE)
 }
 \arguments{
 \item{mattlib_loc}{Directory where src packages should be installed.}

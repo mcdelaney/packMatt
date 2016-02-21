@@ -7,5 +7,6 @@ create_r_profile <- function(mattlib_loc = 'mattpack.lock'){
   file <- sprintf("%s/.Rprofile", file_loc)
   if (file.exists(file)) { system(sprintf("rm %s", file)) }
   file.create(file)
-  writeLines(sprintf(".libPaths('%s/')", file_loc, mattlib_loc))
+  con <- open.connection(file_loc)
+  writeLines(sprintf(".libPaths('%s/')", mattlib_loc), con = con)
 }

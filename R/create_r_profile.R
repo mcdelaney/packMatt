@@ -1,7 +1,7 @@
 #' @title create_r_profile
 #'
 
-create_r_profile <- function(mattlib_loc = 'mattpack.lock'){
+create_r_profile <- function(mattlib_loc = 'mattlib'){
   file_loc <- normalizePath(getwd())
   mattlib_loc <- normalizePath(mattlib_loc)
   file <- sprintf("%s/.Rprofile", file_loc)

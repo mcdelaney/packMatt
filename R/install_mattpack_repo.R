@@ -43,6 +43,6 @@ install_mattpack_lib <- function(mattlib_loc = 'mattlib',
   if (!all(results == "success")) {
     stop("Not all packages installed successfully...exiting...")
   }
-  packMatt::create_r_profile()
+  packMatt:::create_r_profile()
   message("All Packages Installed Successfully!")
 }

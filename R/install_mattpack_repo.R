@@ -11,13 +11,22 @@ install_mattpack_lib <- function(mattlib_loc = 'mattlib',
   mattlib_loc <- normalizePath(mattlib_loc)
 
   install_loc <- paste0(mattlib_loc, "/lib")
+  dir.create(install.loc)
+
   src_loc <- paste0(mattlib_loc, "/src")
 
   packages <- read.dcf(normalizePath(lock_file_loc))
 
+  already_installed <- as.character(installed.packages(install_loc)[,"Package"])
+
   install_mattpack <- function(pkg, install_loc, src_loc){
 
     pkg <- as.list(pkg)
+
+    if (pkg$name %in% already_installed) {
+      message(springf("Skipping %s...already installed in mattlib...", pkg$name))
+      return('success')
+    }
 
     if (pkg$type == "base") {
       message(sprintf("Ignoring base package: %s", pkg$name))
@@ -34,7 +43,12 @@ install_mattpack_lib <- function(mattlib_loc = 'mattlib',
 
     dir.create(path = install_loc, recursive = T, showWarnings = F)
     install.packages(file_loc, repos = NULL, type = "source", lib = install_loc)
-    return("success")
+
+    if (pkg$name %in% as.character(installed.packages(install_loc)[,"Package"])) {
+      return("success")
+    }else{
+      return("error")
+    }
   }
 
   results <- apply(packages, 1, FUN = install_mattpack,

@@ -12,7 +12,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   loaded <- data.frame(name = search()[grepl("package:", x = search())])
 
-  loaded <- data.frame(name = loaded[!loaded$name %in% "package:packMatt", ])
+  # loaded <- data.frame(name = loaded[!loaded$name %in% "package:packMatt", ])
 
   loaded$name <- gsub("package:", "", x = loaded$name)
 

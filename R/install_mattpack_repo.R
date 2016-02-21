@@ -11,7 +11,7 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
   mattlib_loc <- normalizePath(mattlib_loc)
 
   install_loc <- paste0(mattlib_loc, "/lib")
-  dir.create(install.loc)
+  dir.create(install_loc)
 
   src_loc <- paste0(mattlib_loc, "/src")
 

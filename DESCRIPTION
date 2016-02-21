@@ -7,4 +7,6 @@ Maintainer: <mdelaney@2u.com>
 Description: A very poor mans port of python virtualenv to R.
 License: The Iron Price
 LazyData: TRUE
+GithubUsername: mcdelaney
+GithubRepo: packMatt
 RoxygenNote: 5.0.1

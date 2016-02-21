@@ -62,7 +62,7 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
 
   if (!all(results == "success")) {
     pkg_list <- as.character(packages[,"Package"])[results != 'success']
-    message(sprintf("Errors installing %s", paste(pkg_list, collapse = "\n")))
+    message(sprintf("Errors installing: \n %s", paste(pkg_list, collapse = "\t\n")))
     stop("Not all packages installed successfully...exiting...")
   }
   create_r_profile()

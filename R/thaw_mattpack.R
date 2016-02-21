@@ -72,9 +72,9 @@ download_pkg <- function(pkg, download_dir, quiet){
     result <- try({download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)})
   }
 
-  if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUser) &&
-      !pkg$GithubUser != "") {
-      system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUser,
+  if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
+      !pkg$GithubUsername != "") {
+      system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUsername,
                      pkg$GithubRepo, full_dest_path))
   }
 

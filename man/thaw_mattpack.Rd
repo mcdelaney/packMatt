@@ -12,6 +12,9 @@ thaw_mattpack(lock_file_loc = "mattpack.lock", quiet = TRUE)
 \item{quiet}{Logical; Should download.file return verbose output? Optional.}
 }
 \description{
+Collects source files for all packages specified in lockfile.
+}
+\details{
 thaw_mattpack
 }
 

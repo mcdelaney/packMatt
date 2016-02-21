@@ -1,6 +1,7 @@
 #'thaw_mattpack
 #'
 #' @title thaw_mattpack
+#' @description Collects source files for all packages specified in lockfile.
 #' @param lock_file_loc Path to mattpack lock file.
 #' @param quiet Logical; Should download.file return verbose output? Optional.
 #' @export
@@ -10,13 +11,13 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
 
   lock_file_loc <- normalizePath(lock_file_loc)
 
-  packages <- packMatt:::prep_package_links(lock_file_loc)
+  packages <- prep_package_links(lock_file_loc)
 
   if (length(packages) == 0) {
     stop("ERROR: Lock file entries are wrong")
   }
 
-  results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
+  results <- mapply(pkg = packages, FUN = download_pkg,
                     download_dir = "mattlib/src", quiet = quiet)
   if (all(results == "success")) {
     message("All packages downloaded successfully..\n")
@@ -69,14 +70,14 @@ download_pkg <- function(pkg, download_dir, quiet){
   if ((inherits(result, 'try-error') || result != 0) &&
       any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
     message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
-    result <- try({download.file(pkg$URL, full_dest_path, "wget", quiet = quiet)})
+    result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
   }
 
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       !pkg$GithubUsername != "") {
       message(sprintf("Cloneing %s via git %s", pkg$name))
       system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUsername,
-                     pkg$GithubRepo, full_dest_path))
+                     pkg$GithubRepo, src_file))
   }
 
   if (result == 0) {

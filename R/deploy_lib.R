@@ -1,4 +1,5 @@
 #' @title deploy_lib
+#' @description Deploys the package sources to the mattlib and sets an .Rprofile
 #' @param lock_file_loc Location where mattpack lockfile is found.
 #' @param mattlib_loc Directory where src packages should be installed.
 #' @param git_pat Github Pat.  Optional and only used if downloaded from a private repo.
@@ -24,7 +25,7 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
     pkg <- as.list(pkg)
 
     if (pkg$name %in% already_installed) {
-      message(springf("Skipping %s...already installed in mattlib...", pkg$name))
+      message(sprintf("Skipping %s...already installed in mattlib...", pkg$name))
       return('success')
     }
 
@@ -57,6 +58,6 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
   if (!all(results == "success")) {
     stop("Not all packages installed successfully...exiting...")
   }
-  packMatt:::create_r_profile()
+  create_r_profile()
   message("All Packages Installed Successfully!")
 }

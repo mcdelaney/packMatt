@@ -6,4 +6,10 @@
 \usage{
 create_r_profile(mattlib_loc = "mattlib/lib/")
 }
+\arguments{
+\item{mattlib_loc}{Location where mattlib is found}
+}
+\description{
+Creates the project specific Rprofile.
+}
 

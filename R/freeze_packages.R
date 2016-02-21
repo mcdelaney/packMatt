@@ -1,6 +1,7 @@
 #' freeze_packages
 #'
 #' @title freeze_packages
+#' @description Produces a lockfile with specifications of all currently loaded packages.
 #' @param lock_file_loc Location to save the mattpack lock file.
 #' @export
 #'
@@ -21,7 +22,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
   attr_list <- c("Depends", "Imports", "URL", "Repository", "Github_Info",
                  "GithubUsername", "GithubRepo")
   for (item in attr_list) {
-    loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
+    loaded[[item]] <- lapply(X = loaded$name, FUN = extract_package_deps,
                              item = item)
   }
 
@@ -37,7 +38,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
       as.character(packageDescription(X)$Version)}))
 
     for (item in attr_list) {
-      loaded[[item]] <- lapply(X = loaded$name, FUN = packMatt:::extract_package_deps,
+      loaded[[item]] <- lapply(X = loaded$name, FUN = extract_package_deps,
                                item = item)
     }
   }

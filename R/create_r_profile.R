@@ -1,4 +1,6 @@
 #' @title create_r_profile
+#' @description Creates the project specific Rprofile.
+#' @param mattlib_loc Location where mattlib is found
 #'
 
 create_r_profile <- function(mattlib_loc = 'mattlib/lib/'){

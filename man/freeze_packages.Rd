@@ -10,6 +10,9 @@ freeze_packages(lock_file_loc = "mattpack.lock")
 \item{lock_file_loc}{Location to save the mattpack lock file.}
 }
 \description{
+Produces a lockfile with specifications of all currently loaded packages.
+}
+\details{
 freeze_packages
 }
 

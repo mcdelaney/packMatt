@@ -9,4 +9,7 @@ prep_package_links(lock_file_loc = "mattpack.lock")
 \arguments{
 \item{lock_file_loc}{Path to mattpack lock file.}
 }
+\description{
+Prepares lock file to be collected by generating urls for download.
+}
 

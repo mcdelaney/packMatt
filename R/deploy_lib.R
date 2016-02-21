@@ -56,7 +56,7 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
                    install_loc = install_loc, src_loc = src_loc)
 
   if (!all(results == "success")) {
-    pkg_list <- as.character(packages[,"Package"])[results != 'success']
+    pkg_list <- as.character(packages[,"name"])[results != 'success']
     message(sprintf("Errors installing %s", paste(pkg_list, collapse = "\n")))
     stop("Not all packages installed successfully...exiting...")
   }

@@ -76,8 +76,11 @@ download_pkg <- function(pkg, download_dir, quiet){
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       !pkg$GithubUsername != "") {
       message(sprintf("Cloneing %s via git %s", pkg$name))
-      system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUsername,
-                     pkg$GithubRepo, src_file))
+      dir.create("git_things")
+      system(sprintf("git clone https://github.com/%s/%s", pkg$GithubUsername,
+                     pkg$GithubRepo))
+      system(sprintf('tar -zcvf %s %s', src_file, pkg$GithubRepo))
+      system(sprintf('rm -rf %s', pkg$GithubRepo))
   }
 
   if (result == 0) {

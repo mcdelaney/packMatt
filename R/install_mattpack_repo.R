@@ -1,11 +1,11 @@
-#' @title install_mattpack_lib
+#' @title deploy_lib
 #' @param lock_file_loc Location where mattpack lockfile is found.
 #' @param mattlib_loc Directory where src packages should be installed.
 #' @param git_pat Github Pat.  Optional and only used if downloaded from a private repo.
 #' @export
 #'
 
-install_mattpack_lib <- function(mattlib_loc = 'mattlib',
+deploy_lib <- function(mattlib_loc = 'mattlib',
                                   lock_file_loc = 'mattpack.lock', git_pat = NULL){
 
   mattlib_loc <- normalizePath(mattlib_loc)

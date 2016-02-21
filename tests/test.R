@@ -14,7 +14,7 @@ test_the_stuff <- function(test_lib = 'mattlib'){
   thaw_results <- thaw_mattpack(lock_file_loc = lock_file_loc)
 
   withr::with_libpaths(new = test_lib,
-                       install_mattpack_repo(mattlib_loc = mattlib_loc,
+                       deploy_lib(mattlib_loc = mattlib_loc,
                                              lock_file_loc = lock_file_loc))
 }
 

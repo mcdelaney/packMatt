@@ -18,7 +18,7 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
       if (is.null(pkg$Github_Info) || pkg$Github_Info == "") {
         pkg$link <- pkg$URL
       }else{
-        pkg$link <- paste0('https://github.com/', pkg$Github_Info)
+        pkg$link <- paste0('https://githubs.com/', pkg$Github_Info)
       }
     }else{
       pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$name &

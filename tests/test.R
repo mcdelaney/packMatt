@@ -13,11 +13,10 @@ test_the_stuff <- function(test_lib = 'mattlib'){
 
   thaw_results <- thaw_mattpack(lock_file_loc = lock_file_loc)
 
-  withr::with_libpaths(new = test_lib,
-                       deploy_lib(mattlib_loc = mattlib_loc,
-                                             lock_file_loc = lock_file_loc))
+
+  deploy_lib(mattlib_loc = mattlib_loc, lock_file_loc = lock_file_loc)
 }
 
-library(withr); library(RPostgreSQL); library(dplyr); library(AnomalyDetection)
+library(AnomalyDetection)
 prep_test_lib(test_lib = TEST_LIB)
 test_the_stuff()

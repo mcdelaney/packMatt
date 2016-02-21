@@ -17,7 +17,7 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
     stop("ERROR: Lock file entries are wrong")
   }
 
-  results <- mapply(pkg = packages, FUN = download_pkg,
+  results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
                     download_dir = "mattlib/src", quiet = quiet)
   if (all(results == "success")) {
     message("All packages downloaded successfully..\n")
@@ -65,22 +65,21 @@ download_pkg <- function(pkg, download_dir, quiet){
   }
 
   message(sprintf("Downloading %s from: %s...", pkg$name, pkg$link))
-  result <- suppressWarnings(try(download.file(pkg$link, src_loc, "curl", quiet = quiet)))
+  result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget", quiet = quiet))})
 
-  if ((inherits(result, 'try-error') || result != 0) &&
-      any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
-    message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
-    result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
-  }
+  # if ((inherits(result, 'try-error') || result != 0) &&
+  #     any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
+  #   message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
+  #   result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
+  # }
 
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
-      !pkg$GithubUsername != "") {
-      message(sprintf("Cloneing %s via git %s", pkg$name))
-      dir.create("git_things")
-      system(sprintf("git clone https://github.com/%s/%s", pkg$GithubUsername,
-                     pkg$GithubRepo))
-      system(sprintf('tar -zcvf %s %s', src_file, pkg$GithubRepo))
+      pkg$GithubUsername != "") {
+      message(sprintf("Cloning %s via git...", pkg$name))
+      system(sprintf("git clone git@github.com:%s/%s.git", pkg$GithubUsername, pkg$GithubRepo))
+      system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
       system(sprintf('rm -rf %s', pkg$GithubRepo))
+      result <- 0
   }
 
   if (result == 0) {

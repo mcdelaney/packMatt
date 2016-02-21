@@ -8,7 +8,7 @@
 #'
 
 thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
-
+  options(stringsAsFactors = FALSE)
   lock_file_loc <- normalizePath(lock_file_loc)
 
   packages <- prep_package_links(lock_file_loc)
@@ -31,7 +31,7 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
 download_pkg <- function(pkg, download_dir, quiet){
 
   if (pkg$type == "base") {
-    message(sprintf("%s is base package...skipping...", pkg$name))
+    message(sprintf("%s is base package...skipping...", pkg$Package))
     return("success")
   }
 
@@ -41,9 +41,9 @@ download_pkg <- function(pkg, download_dir, quiet){
                          substr(download_dir, 0, (dl_dir_len - 1)),
                          download_dir)
 
-  src_file <- paste0(pkg$name, "_", pkg$version, ".tar.gz")
+  src_file <- paste0(pkg$Package, "_", pkg$Version, ".tar.gz")
 
-  src_loc <- paste(download_dir, pkg$name, src_file, sep = "/")
+  src_loc <- paste(download_dir, pkg$Package, src_file, sep = "/")
 
   if (!dir.exists(download_dir)) {
     message(sprintf("%s Dir not found...creating...", download_dir))
@@ -53,39 +53,39 @@ download_pkg <- function(pkg, download_dir, quiet){
     }
   }
 
-  if (!dir.exists(paste0(download_dir, "/", pkg$name))) {
+  if (!dir.exists(paste0(download_dir, "/", pkg$Package))) {
     message(sprintf("%s Dir not found...creating...",
-                    paste0(download_dir, "/", pkg$name)))
-    dir.create(paste0(download_dir, "/", pkg$name))
+                    paste0(download_dir, "/", pkg$Package)))
+    dir.create(paste0(download_dir, "/", pkg$Package))
   }
 
   if (file.exists(src_loc) && file.size(src_loc) > 0) {
-    message(sprintf("File for %s already exists...skipping....", pkg$name))
+    message(sprintf("File for %s already exists...skipping....", pkg$Package))
     return("success")
   }
 
-  message(sprintf("Downloading %s from: %s...", pkg$name, pkg$link))
+  message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
   result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget", quiet = quiet))})
 
   # if ((inherits(result, 'try-error') || result != 0) &&
   #     any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
-  #   message(sprintf("Error... trying git url for %s at %s", pkg$name, pkg$URL))
+  #   message(sprintf("Error... trying git url for %s at %s", pkg$Package, pkg$URL))
   #   result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
   # }
 
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       pkg$GithubUsername != "") {
-      message(sprintf("Cloning %s via git...", pkg$name))
+      message(sprintf("Cloning %s via git...", pkg$Package))
       system(sprintf("git clone git@github.com:%s/%s.git", pkg$GithubUsername, pkg$GithubRepo))
       system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
-      # system(sprintf('rm -rf %s', pkg$GithubRepo))
+      system(sprintf('rm -rf %s', pkg$GithubRepo))
       result <- 0
   }
 
   if (result == 0) {
-    message(sprintf("%s Downloaded successfully...\n", pkg$name))
+    message(sprintf("%s Downloaded successfully...\n", pkg$Package))
   }else{
-    stop(sprintf("Error downloading package: %s...\n", pkg$name))
+    stop(sprintf("Error downloading package: %s...\n", pkg$Package))
   }
   return('success')
 }

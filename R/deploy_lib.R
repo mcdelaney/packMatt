@@ -7,8 +7,13 @@
 #'
 
 deploy_lib <- function(mattlib_loc = 'mattlib',
-                       lock_file_loc = 'mattpack.lock', git_pat = NULL){
+                       lock_file_loc = 'mattpack.lock', git_pat = NULL, do_thaw = FALSE){
 
+  if(do_thaw){
+    thaw_mattpack(lock_file_loc = lock_file_loc)
+  }
+
+  options(stringsAsFactors = FALSE)
   mattlib_loc <- normalizePath(mattlib_loc)
 
   install_loc <- paste0(mattlib_loc, "/lib")
@@ -24,28 +29,28 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
 
     pkg <- as.list(pkg)
 
-    if (pkg$name %in% already_installed) {
-      message(sprintf("Skipping %s...already installed in mattlib...", pkg$name))
+    if (pkg$Package %in% already_installed) {
+      message(sprintf("Skipping %s...already installed in mattlib...", pkg$Package))
       return('success')
     }
 
     if (pkg$type == "base") {
-      message(sprintf("Ignoring base package: %s", pkg$name))
+      message(sprintf("Ignoring base package: %s", pkg$Package))
       return("success")
     }
 
-    message(sprintf("Attempting install for: %s at %s", pkg$name, install_loc))
+    message(sprintf("Attempting install for: %s at %s", pkg$Package, install_loc))
 
-    file_loc <- paste0(src_loc, "/", pkg$name, "/", pkg$name, "_", pkg$version, ".tar.gz")
+    file_loc <- paste0(src_loc, "/", pkg$Package, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
 
     if (!file.exists(file_loc)) {
-      stop(sprintf("Files not found for %s... stopping", pkg$name))
+      stop(sprintf("Files not found for %s... stopping", pkg$Package))
     }
 
     dir.create(path = install_loc, recursive = T, showWarnings = F)
     install.packages(file_loc, repos = NULL, type = "source", lib = install_loc)
 
-    if (pkg$name %in% as.character(installed.packages(install_loc)[,"Package"])) {
+    if (pkg$Package %in% as.character(installed.packages(install_loc)[,"Package"])) {
       return("success")
     }else{
       return("error")

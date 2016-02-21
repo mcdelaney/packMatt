@@ -3,7 +3,7 @@
 #' @param lock_file_loc Path to mattpack lock file.
 
 prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
-
+  options(stringsAsFactors = FALSE)
   lock_file_loc <- normalizePath(lock_file_loc)
 
   if (!file.exists(lock_file_loc)) { stop('lock file does not exist')}
@@ -21,13 +21,13 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
         pkg$link <- paste0('https://githubs.com/', pkg$Github_Info)
       }
     }else{
-      pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$name &
-                                avail_pkgs$Version == pkg$version,]$Repository
+      pkg_match <- avail_pkgs[avail_pkgs$Package == pkg$Package &
+                                avail_pkgs$Version == pkg$Version,]$Repository
       if (length(pkg_match) == 1) {
-        pkg$link <- paste0(pkg_match, "/", pkg$name, "_", pkg$version, ".tar.gz")
+        pkg$link <- paste0(pkg_match, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
       }else{
         pkg$link <- paste0("http://cran.rstudio.com/src/contrib/", "Archive/",
-                           pkg$name, "/", pkg$name, "_", pkg$version, ".tar.gz")
+                           pkg$Package, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
       }
     }
 

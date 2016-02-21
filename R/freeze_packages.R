@@ -2,99 +2,88 @@
 #'
 #' @title freeze_packages
 #' @description Produces a lockfile with specifications of all currently loaded packages.
-#' @param lock_file_loc Location to save the mattpack lock file.
 #' @export
 #'
+
 freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   options(stringsAsFactors = FALSE)
 
-  home_lib <- .Library
+  all_pkgs <- as.character(installed.packages()[,"Package"])
+  packages <- gsub("package:", "", search()[grepl("package:", search())])
 
-  loaded <- data.frame(name = search()[grepl("package:", x = search())])
+  dep.env <<- new.env()
+  dep.env$depends <- c()
 
-  # loaded <- data.frame(name = loaded[!loaded$name %in% "package:packMatt", ])
+  info <- lapply(X = packages, FUN = packMatt:::gather_package_info, all_pkgs = all_pkgs)
 
-  loaded$name <- gsub("package:", "", x = loaded$name)
+  package_list <- unlist(lapply(X = info, FUN = function(X) X$Package))
+  dep.env$depends <- unique(dep.env$depends[!dep.env$depends %in% package_list])
 
-  loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
-    as.character(packageDescription(X)$Version)}))
-  attr_list <- c("Depends", "Imports", "URL", "Repository", "Github_Info",
-                 "GithubUsername", "GithubRepo")
-  for (item in attr_list) {
-    loaded[[item]] <- lapply(X = loaded$name, FUN = extract_package_deps,
-                             item = item)
-  }
-
-  alldeps <- unique(unlist(lapply(X = 1:nrow(loaded), FUN = function(X){
-    vals <- unique(c(unlist(loaded[X,]$Depends[1]), unlist(loaded[X,]$Imports[1])))
-    vals <- vals[!vals %in% c("", NA, "R")]
-    return(vals)
-  })))
-
-  if (length(alldeps) > 0) {
-    loaded <- data.frame(name = unique(c(alldeps, loaded$name)))
-    loaded$version <- unlist(lapply(X = loaded$name, FUN = function(X){
-      as.character(packageDescription(X)$Version)}))
-
-    for (item in attr_list) {
-      loaded[[item]] <- lapply(X = loaded$name, FUN = extract_package_deps,
-                               item = item)
+  while (!all(dep.env$depends %in% package_list)) {
+    for (pkg in dep.env$depends) {
+      info <- append(info, list(packMatt:::gather_package_info(package = pkg, all_pkgs = all_pkgs)))
+      package_list <- unlist(lapply(X = info, FUN = function(X){ X$Package } ))
+      dep.env$depends <- unique(dep.env$depends[!dep.env$depends %in% package_list])
     }
   }
 
-  sess_info <- sessionInfo()
-
-  loaded$type <- ifelse(paste0(home_lib, "/",loaded$name) == find.package(loaded$name),
-                        "base", "external")
-
-  loaded <- as.matrix(loaded)
-
-  write.dcf(loaded, file = lock_file_loc, indent = 4)
-
+  info <- packMatt:::make_dcf_file_df(info = info)
+  write.dcf(info, file = lock_file_loc, indent = 4)
   message("MattPack lock file successfully created....")
 }
 
+gather_package_info <- function(package, all_pkgs){
+  info <- packageDescription(package, fields = c("Package", "Version", "Depends",
+                                                 "GithubRepo", "GithubUsername",
+                                                 "Repository", "Imports", "URL"))
 
-extract_package_deps <- function(pkg_name, item){
-  description <- packageDescription(pkg_name)
+  info$type <- ifelse(paste0(.Library, "/",info$Package) == find.package(info$Package),
+                        "base", "external")
 
-  if ("Github_Info" == item) {
-    if (all(c("GithubRepo", "GithubUsername") %in% names(description))) {
-      return(paste0(description[['GithubUsername']], "/", description[['GithubRepo']]))
-    }else{
-      return("")
-    }
+  for (col in c("Imports", "Depends")) {
+    info[[col]] <- unlist(lapply(X = info[[col]], FUN = split_depends, all_pkgs = all_pkgs))
+  }
+  info$comb_depends <- unlist(c(info$Imports, info$Depends))
+
+  info <- info[!names(info) %in% c("Imports", "Depends")]
+
+  if (length(info$comb_depends) > 0) {
+    dep.env$depends <- append(dep.env$depends, info$comb_depends)
   }
 
-  if (item %in% names(description)) {
+  info <- as.list(info)
+  return(info)
+}
 
-    dat <- gsub("[\n]", " ", as.character(description[[item]]))
-    dat <- strsplit(dat, split = ", ")[[1]]
+split_depends <- function(X, all_pkgs){
+  if (is.null(X) || X %in% c("", NA)) { return(NULL) }
+  X <- gsub("[\n]", " ", as.character(X))
+  X <- strsplit(X, split = "[, ]+")[[1]]
+  X <- X[unlist(lapply(X, FUN = function(X) X %in% all_pkgs))]
+  return(X)
+}
 
-    if (item == "URL" && length(dat) > 1) {
-      dat <- unlist(lapply(X= dat, FUN = function(X){
-        if (grepl("github", X)){
-          return(X)
-        }else{
-          return("")
-        }
-      }))
 
-      if (all(is.na(dat))){
-        dat <- ""
+make_dcf_file_df <- function(info) {
+  all_names <- unique(unlist(lapply(X = info, names)))
+
+  df <- data.frame(NA)
+  for (nm in all_names) {
+    df[[nm]] <- NA
+  }
+  df <- df[,-1]
+
+  for (pkg_row in c(1:length(info))) {
+    pkg <- info[pkg_row][[1]]
+    for (df_name in names(df)){
+      if (df_name %in% names(pkg)) {
+        df[pkg_row, df_name] <- paste(pkg[[df_name]], collapse = ",")
       }else{
-        dat <- dat[!is.na(dat)][[1]]
+        df[pkg_row, df_name] <- NA
       }
     }
-
-    dat <- unlist(lapply(X = dat, FUN = function(X){
-      dat <- gsub("\\s\\(.*", "", X)
-      gsub("\\s", "", dat)
-    }))
-
-    return(list(dat))
-  }else{
-    return("")
   }
+  return(df)
 }
+

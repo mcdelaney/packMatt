@@ -6,3 +6,5 @@ test-lib/
 .Rprofile
 mattlib/
 mattpack.lock
+dev/
+full-test/

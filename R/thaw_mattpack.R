@@ -74,6 +74,7 @@ download_pkg <- function(pkg, download_dir, quiet){
 
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       !pkg$GithubUsername != "") {
+      message(sprintf("Cloneing %s via git %s", pkg$name))
       system(sprintf("git clone https://github.com/%s/%s %s", pkg$GithubUsername,
                      pkg$GithubRepo, full_dest_path))
   }

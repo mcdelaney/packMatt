@@ -96,7 +96,6 @@ download_pkg <- function(pkg, download_dir, quiet, github_pat){
                             "master", src_loc)
         system(git_link)
       }
-      # 'tar xf ugly_name.tar && mv ugly_name pretty_name'
     }else{
       git_link <- (sprintf("wget https://github.com/%s/%s/archive/master.tar.gz -O %s",
                            pkg$GithubUsername, pkg$GithubRepo, src_loc))

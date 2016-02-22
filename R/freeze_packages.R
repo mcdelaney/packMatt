@@ -34,19 +34,19 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 }
 
 gather_package_info <- function(package, all_pkgs){
-  info <- packageDescription(package, fields = c("Package", "Version", "Depends",
+  info <- packageDescription(package, fields = c("Package", "Version", "Depends", "LinkingTo",
                                                  "GithubRepo", "GithubUsername",
                                                  "Repository", "Imports", "URL"))
 
   info$type <- ifelse(paste0(.Library, "/",info$Package) == find.package(info$Package),
                         "base", "external")
 
-  for (col in c("Imports", "Depends")) {
+  for (col in c("Imports", "Depends", "LinkingTo")) {
     info[[col]] <- unlist(lapply(X = info[[col]], FUN = split_depends, all_pkgs = all_pkgs))
   }
-  info$comb_depends <- unlist(c(info$Imports, info$Depends))
+  info$comb_depends <- unlist(c(info$Imports, info$Depends, info$LinkingTo))
 
-  info <- info[!names(info) %in% c("Imports", "Depends")]
+  info <- info[!names(info) %in% c("Imports", "Depends", "LinkingTo")]
 
   if (length(info$comb_depends) > 0) {
     dep.env$depends <- append(dep.env$depends, info$comb_depends)

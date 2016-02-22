@@ -85,6 +85,14 @@ make_dcf_file_df <- function(info) {
     }
   }
 
+  df$depcount <- unlist(lapply(X = df$comb_depends, FUN = function(X) {
+    length(gregexpr(",", X, fixed = TRUE)[[1]])
+  }))
+
+  df <- df[order(df$depcount),]
+
+  # df <- df[,names(df) %in% c("depcount")]
+
   return(df)
 }
 

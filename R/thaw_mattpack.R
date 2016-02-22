@@ -64,9 +64,10 @@ download_pkg <- function(pkg, download_dir, quiet){
     return("success")
   }
 
+  if (pkg$type == "CRAN") {
   message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
   result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget", quiet = quiet))})
-
+  }
   # if ((inherits(result, 'try-error') || result != 0) &&
   #     any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
   #   message(sprintf("Error... trying git url for %s at %s", pkg$Package, pkg$URL))

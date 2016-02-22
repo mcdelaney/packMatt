@@ -1,7 +1,7 @@
 Package: packMatt
 Type: Package
 Title: packMatt
-Version: 0.1.0
+Version: 0.0.1
 Author: Matt Delaney
 Maintainer: <mdelaney@2u.com>
 Description: A very poor mans port of python virtualenv to R.

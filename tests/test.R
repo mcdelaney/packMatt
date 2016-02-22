@@ -18,6 +18,7 @@ test_the_stuff <- function(test_lib = 'mattlib'){
 library(ggplot2)
 # ; library(dplyr)
 prep_test_lib(test_lib = TEST_LIB)
+.libPaths(c("mattlib/lib/", .Library))
 test_the_stuff()
 system("rm .Rprofile")
 

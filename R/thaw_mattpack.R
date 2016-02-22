@@ -85,7 +85,7 @@ download_pkg <- function(pkg, download_dir, quiet){
   if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       pkg$GithubUsername != "") {
     message(sprintf("Cloning %s via git...", pkg$Package))
-    system(sprintf("wget https://github.com/%s/%s/archive/master.tar.gz %s", pkg$GithubUsername, pkg$GithubRepo, src_loc))
+    system(sprintf("wget https://github.com/%s/%s/archive/master.tar.gz -O %s", pkg$GithubUsername, pkg$GithubRepo, src_loc))
     # system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
     # system(sprintf('rm -rf %s', pkg$GithubRepo))
     result <- 0

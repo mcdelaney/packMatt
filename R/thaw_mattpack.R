@@ -83,7 +83,7 @@ download_pkg <- function(pkg, download_dir, quiet){
   #     result <- 0
   # }
 
-  if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
+  if (!exists("result") || (inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
       pkg$GithubUsername != "") {
     system(sprintf("rm -rf %s", src_loc))
     message(sprintf("Cloning %s via git...", pkg$Package))

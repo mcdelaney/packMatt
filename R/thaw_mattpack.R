@@ -64,7 +64,7 @@ download_pkg <- function(pkg, download_dir, quiet){
     return("success")
   }
 
-  if (pkg$type == "CRAN") {
+  if (pkg$Repository == "CRAN") {
   message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
   result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget", quiet = quiet))})
   }

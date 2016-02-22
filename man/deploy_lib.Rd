@@ -5,14 +5,12 @@
 \title{deploy_lib}
 \usage{
 deploy_lib(mattlib_loc = "mattlib", lock_file_loc = "mattpack.lock",
-  git_pat = NULL, do_thaw = FALSE)
+  do_thaw = FALSE)
 }
 \arguments{
 \item{mattlib_loc}{Directory where src packages should be installed.}
 
 \item{lock_file_loc}{Location where mattpack lockfile is found.}
-
-\item{git_pat}{Github Pat.  Optional and only used if downloaded from a private repo.}
 }
 \description{
 Deploys the package sources to the mattlib and sets an .Rprofile

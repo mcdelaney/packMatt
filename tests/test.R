@@ -7,19 +7,21 @@ prep_test_lib <- function(test_lib = "mattlib"){
 }
 
 test_the_stuff <- function(test_lib = 'mattlib'){
-  lock_file_loc <- "mattpack.lock"
   mattlib_loc = test_lib
-  freeze_packages(lock_file_loc = lock_file_loc)
+  freeze_packages(lock_file_loc = "mattpack.lock")
 
-  thaw_results <- thaw_mattpack(lock_file_loc = lock_file_loc)
+  thaw_results <- thaw_mattpack(lock_file_loc = "mattpack.lock")
   deploy_lib(mattlib_loc = 'mattlib', lock_file_loc = "mattpack.lock")
 }
 
-library(ggplot2)
-# ; library(dplyr)
+library(ggplot2); library(DelightfulFunctions)
 prep_test_lib(test_lib = TEST_LIB)
 .libPaths(c("mattlib/lib/", .Library))
-test_the_stuff()
+freeze_packages(lock_file_loc = "mattpack.lock")
+thaw_mattpack(lock_file_loc = "mattpack.lock")
+deploy_lib(mattlib_loc = 'mattlib', lock_file_loc = "mattpack.lock")
+
+# test_the_stuff()
 system("rm .Rprofile")
 
 # lock_file_loc <- "mattpack.lock"

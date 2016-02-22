@@ -2,12 +2,11 @@
 #' @description Deploys the package sources to the mattlib and sets an .Rprofile
 #' @param lock_file_loc Location where mattpack lockfile is found.
 #' @param mattlib_loc Directory where src packages should be installed.
-#' @param git_pat Github Pat.  Optional and only used if downloaded from a private repo.
 #' @export
 #'
 
 deploy_lib <- function(mattlib_loc = 'mattlib',
-                       lock_file_loc = 'mattpack.lock', git_pat = NULL, do_thaw = FALSE){
+                       lock_file_loc = 'mattpack.lock', do_thaw = FALSE){
 
   options(stringsAsFactors = FALSE)
 

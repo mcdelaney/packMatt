@@ -3,11 +3,14 @@
 #' @title thaw_mattpack
 #' @description Collects source files for all packages specified in lockfile.
 #' @param lock_file_loc Path to mattpack lock file.
+#' @param github_pat Github Pat.  Optional and only used if downloaded from a private repo.
 #' @param quiet Logical; Should download.file return verbose output? Optional.
 #' @export
 #'
 
-thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
+thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', github_pat = NA,
+                          quiet = TRUE){
+
   options(stringsAsFactors = FALSE)
   lock_file_loc <- normalizePath(lock_file_loc)
 
@@ -18,7 +21,8 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
   }
 
   results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
-                    download_dir = "mattlib/src", quiet = quiet)
+                    download_dir = "mattlib/src", quiet = quiet,
+                    github_pat = github_pat)
   if (all(results == "success")) {
     message("All packages downloaded successfully..\n")
     return("Done!")
@@ -28,7 +32,7 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', quiet = TRUE){
 }
 
 
-download_pkg <- function(pkg, download_dir, quiet){
+download_pkg <- function(pkg, download_dir, quiet, github_pat){
 
   if (pkg$type == "base") {
     message(sprintf("%s is base package...skipping...", pkg$Package))
@@ -65,31 +69,39 @@ download_pkg <- function(pkg, download_dir, quiet){
   }
 
   if (pkg$Repository == "CRAN") {
-  message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
-  result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget", quiet = quiet))})
+    message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
+    result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget",
+                                                  quiet = quiet))})
   }
-  # if ((inherits(result, 'try-error') || result != 0) &&
-  #     any(lapply(pkg$URL, FUN = grepl, pattern = "github"))) {
-  #   message(sprintf("Error... trying git url for %s at %s", pkg$Package, pkg$URL))
-  #   result <- try({download.file(pkg$URL, src_file, "wget", quiet = quiet)})
-  # }
 
-  # if ((inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
-  #     pkg$GithubUsername != "") {
-  #     message(sprintf("Cloning %s via git...", pkg$Package))
-  #     system(sprintf("git clone git@github.com:%s/%s.git", pkg$GithubUsername, pkg$GithubRepo))
-  #     system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
-  #     system(sprintf('rm -rf %s', pkg$GithubRepo))
-  #     result <- 0
-  # }
-
-  if (!exists("result") || (inherits(result, 'try-error') || result != 0) && !is.null(pkg$GithubUsername) &&
-      pkg$GithubUsername != "") {
+  if (!exists("result") || (inherits(result, 'try-error') || result != 0) &&
+      !is.null(pkg$GithubUsername) && pkg$GithubUsername != "") {
     system(sprintf("rm -rf %s", src_loc))
     message(sprintf("Cloning %s via git...", pkg$Package))
-    system(sprintf("wget https://github.com/%s/%s/archive/master.tar.gz -O %s", pkg$GithubUsername, pkg$GithubRepo, src_loc))
-    # system(sprintf('tar -zcvf %s %s', src_loc, pkg$GithubRepo))
-    # system(sprintf('rm -rf %s', pkg$GithubRepo))
+
+    if (!is.na(github_pat) | Sys.getenv("GITHUB_PAT") != "") {
+      message("Attempting github download using PAT key... ")
+      github_pat <- ifelse(is.na(github_pat), Sys.getenv("GITHUB_PAT"), github_pat)
+      git_link <- sprintf("wget --header='Authorization: token %s' \\
+                          https://api.github.com/repos/%s/%s/tarball/%s -O %s",
+                          github_pat, pkg$GithubUsername, pkg$GithubRepo,
+                          pkg$Version, src_loc)
+      system(git_link)
+      if (file.size(src_loc) == 0) {
+        warning(sprintf("Warning: github version %s for %s not found...attempting
+                        to download from master", pkg$Version, pkg$Package))
+        git_link <- sprintf("wget --header='Authorization: token %s' \\
+                          https://api.github.com/repos/%s/%s/tarball/%s -O %s",
+                            github_pat, pkg$GithubUsername, pkg$GithubRepo,
+                            "master", src_loc)
+        system(git_link)
+      }
+      # 'tar xf ugly_name.tar && mv ugly_name pretty_name'
+    }else{
+      git_link <- (sprintf("wget https://github.com/%s/%s/archive/master.tar.gz -O %s",
+                           pkg$GithubUsername, pkg$GithubRepo, src_loc))
+      system(git_link)
+    }
     result <- 0
   }
 

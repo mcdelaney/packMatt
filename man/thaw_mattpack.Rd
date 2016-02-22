@@ -4,10 +4,13 @@
 \alias{thaw_mattpack}
 \title{thaw_mattpack}
 \usage{
-thaw_mattpack(lock_file_loc = "mattpack.lock", quiet = TRUE)
+thaw_mattpack(lock_file_loc = "mattpack.lock", github_pat = NULL,
+  quiet = TRUE)
 }
 \arguments{
 \item{lock_file_loc}{Path to mattpack lock file.}
+
+\item{github_pat}{Github Pat.  Optional and only used if downloaded from a private repo.}
 
 \item{quiet}{Logical; Should download.file return verbose output? Optional.}
 }

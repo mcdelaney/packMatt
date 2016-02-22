@@ -28,6 +28,8 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
     }
   }
 
+  info <- lapply(X = info, FUN = function(X){ X$comb_depends <-  unique(unlist(X$comb_depends)); return(X)})
+
   info <- packMatt:::make_dcf_file_df(info = info)
   write.dcf(info, file = lock_file_loc, indent = 4)
   message("MattPack lock file successfully created....")
@@ -42,7 +44,7 @@ gather_package_info <- function(package, all_pkgs){
                         "base", "external")
 
   for (col in c("Imports", "Depends", "LinkingTo")) {
-    info[[col]] <- unlist(lapply(X = info[[col]], FUN = split_depends, all_pkgs = all_pkgs))
+    info[[col]] <- unique(unlist(lapply(X = info[[col]], FUN = split_depends, all_pkgs = all_pkgs)))
   }
   info$comb_depends <- unlist(c(info$Imports, info$Depends, info$LinkingTo))
 
@@ -60,7 +62,7 @@ split_depends <- function(X, all_pkgs){
   if (is.null(X) || X %in% c("", NA)) { return(NULL) }
   X <- gsub("[\n]", " ", as.character(X))
   X <- strsplit(X, split = "[, ]+")[[1]]
-  X <- X[unlist(lapply(X, FUN = function(X) X %in% all_pkgs))]
+  X <- unique(X[unlist(lapply(X, FUN = function(X) X %in% all_pkgs))])
   return(X)
 }
 

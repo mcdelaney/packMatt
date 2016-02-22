@@ -9,7 +9,7 @@
 deploy_lib <- function(mattlib_loc = 'mattlib',
                        lock_file_loc = 'mattpack.lock', git_pat = NULL, do_thaw = FALSE){
 
-  if(do_thaw){
+  if (do_thaw) {
     thaw_mattpack(lock_file_loc = lock_file_loc)
   }
 
@@ -24,42 +24,14 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
 
   packages <- read.dcf(normalizePath(lock_file_loc))
 
-  already_installed <- as.character(installed.packages(install_loc)[,"Package"])
+  already_installed <- as.character(installed.packages(c(install_loc, .Library))[,"Package"])
 
-  install_mattpack <- function(pkg, install_loc, src_loc){
+  install_list <- as.character(packages[,"Package"])
 
-    pkg <- as.list(pkg)
-
-    if (pkg$Package %in% already_installed) {
-      message(sprintf("Skipping %s...already installed in mattlib...", pkg$Package))
-      return('success')
-    }
-
-    if (pkg$type == "base") {
-      message(sprintf("Ignoring base package: %s", pkg$Package))
-      return("success")
-    }
-
-    message(sprintf("Attempting install for: %s at %s", pkg$Package, install_loc))
-
-    file_loc <- paste0(src_loc, "/", pkg$Package, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
-
-    if (!file.exists(file_loc)) {
-      stop(sprintf("Files not found for %s... stopping", pkg$Package))
-    }
-
-    dir.create(path = install_loc, recursive = T, showWarnings = F)
-    install.packages(file_loc, repos = NULL, type = "source", lib = install_loc)
-
-    if (pkg$Package %in% as.character(installed.packages(install_loc)[,"Package"])) {
-      return("success")
-    }else{
-      return("error")
-    }
-  }
-
-  results <- apply(packages, 1, FUN = install_mattpack,
-                   install_loc = install_loc, src_loc = src_loc)
+  results <- lapply(X=install_list, FUN = function(X){
+    packMatt:::install_mattpack(pkg = X,
+                                install_loc = install_loc, src_loc = src_loc,
+                                packages = packages)})
 
   if (!all(results == "success")) {
     pkg_list <- as.character(packages[,"Package"])[results != 'success']
@@ -68,4 +40,64 @@ deploy_lib <- function(mattlib_loc = 'mattlib',
   }
   create_r_profile()
   message("All Packages Installed Successfully!")
+}
+
+
+install_mattpack <- function(pkg, install_loc, src_loc, packages){
+  options(stringsAsFactors = F)
+  message(sprintf("Attempting install for: %s at %s", pkg, install_loc))
+  already_installed <- as.character(installed.packages(c(install_loc, .Library))[,"Package"])
+
+  pkg <- as.list(packages[packages[,"Package"]==pkg,])
+
+  if (pkg$type == "base" || (length(already_installed) >= 1 && pkg$Package %in% already_installed)) {
+    message(sprintf("Skipping %s...%s...", pkg$Package,
+                    ifelse(pkg$type == "base", "is base", "already installed")))
+    return('success')
+  }
+
+  pkg$comb_depends <- packMatt:::split_depends_deploy(pkg$comb_depends)
+  if (is.null(pkg$comb_depends) || is.na(pkg$comb_depends) || length(pkg$comb_depends) == 0 || all(pkg$comb_depends %in% already_installed)) {
+    message(sprintf("No Depends found for: %s...installing", pkg$Package))
+    file_loc <- paste0(src_loc, "/", pkg$Package, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
+    dir.create(path = install_loc, recursive = T, showWarnings = F)
+    install.packages(file_loc, repos = NULL, type = "source", lib = install_loc)
+
+    if (pkg$Package %in% as.character(installed.packages(install_loc)[,"Package"])) {
+      return("success")
+    }else{
+      return("error")
+    }
+  }else{
+    message(sprintf("Depends found for: %s...installing first", pkg$Package))
+    results <- unlist(lapply(X = pkg$comb_depends, FUN = packMatt:::install_mattpack,
+                             install_loc = install_loc, src_loc = src_loc, packages = packages))
+    # return(results)
+
+  }
+  message(sprintf("Attempting install for: %s at %s", pkg$Package, install_loc))
+
+  file_loc <- paste0(src_loc, "/", pkg$Package, "/", pkg$Package, "_", pkg$Version, ".tar.gz")
+
+  if (!file.exists(file_loc)) {
+    stop(sprintf("Files not found for %s...", pkg$Package))
+  }
+
+  dir.create(path = install_loc, recursive = T, showWarnings = F)
+  install.packages(file_loc, repos = NULL, type = "source", lib = install_loc,
+                   packages = packages)
+
+  if (pkg$Package %in% as.character(installed.packages(install_loc)[,"Package"])) {
+    return("success")
+  }else{
+    return("error")
+  }
+}
+
+
+split_depends_deploy <- function(X){
+  if (is.null(X) || X %in% c("", NA)) { return(NA) }
+  X <- gsub("[\n]", " ", as.character(X))
+  X <- strsplit(X, split = "[, ]+")[[1]]
+  return(X)
 }

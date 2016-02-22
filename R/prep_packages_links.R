@@ -17,7 +17,7 @@ prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
     if ((!is.null(pkg$Github_Info) && pkg$Github_Info != "") | (pkg$Repository != "CRAN" && grepl("github", x = pkg$URL))) {
       if (is.null(pkg$Github_Info) || pkg$Github_Info == "") {
         pkg$link <- paste0('https://githubs.com/', pkg$Github_Info)
-        pkg$link <- pkg$URL
+        # pkg$link <- pkg$URL
       }else{
         pkg$link <- paste0('https://githubs.com/', pkg$Github_Info)
       }

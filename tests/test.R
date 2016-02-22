@@ -19,5 +19,9 @@ test_the_stuff <- function(test_lib = 'mattlib'){
 
 library(ggplot2); library(dplyr)
 prep_test_lib(test_lib = TEST_LIB)
-test_the_stuff()
+# test_the_stuff()
+lock_file_loc <- "mattpack.lock"
+freeze_packages(lock_file_loc = lock_file_loc)
+thaw_mattpack(lock_file_loc = lock_file_loc)
 
+deploy_lib(mattlib_loc = 'mattlib', lock_file_loc = "mattpack.lock")

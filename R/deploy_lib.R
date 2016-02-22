@@ -6,7 +6,7 @@
 #'
 
 deploy_lib <- function(mattlib_loc = 'mattlib',
-                       lock_file_loc = 'mattpack.lock', do_thaw = FALSE){
+                       lock_file_loc = 'mattpack.lock', do_thaw = TRUE){
 
   options(stringsAsFactors = FALSE)
 

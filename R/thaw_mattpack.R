@@ -12,102 +12,56 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', github_pat = NA,
                           quiet = TRUE){
 
   options(stringsAsFactors = FALSE)
-  lock_file_loc <- normalizePath(lock_file_loc)
 
-  packages <- prep_package_links(lock_file_loc)
+  packages <- prep_package_links(normalizePath(lock_file_loc))
 
-  if (length(packages) == 0) {
-    stop("ERROR: Lock file entries are wrong")
-  }
+  github_pat <- ifelse(is.na(github_pat) & Sys.getenv("GITHUB_PAT") != "",
+                       Sys.getenv("GITHUB_PAT"), github_pat)
 
   results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
                     download_dir = "mattlib/src", quiet = quiet,
                     github_pat = github_pat)
-  if (all(results == "success")) {
-    message("All packages downloaded successfully..\n")
-    return("Done!")
-  }else{
+
+  if (!all(results == "success")) {
     stop("Error.... not all packages downloaded successfully")
   }
+
+  message("All packages downloaded successfully..\n")
 }
 
 
 download_pkg <- function(pkg, download_dir, quiet, github_pat){
 
   if (pkg$type == "base") {
-    message(sprintf("%s is base package...skipping...", pkg$Package))
+    message(sprintf("%s is base package...skipping...\n", pkg$Package))
     return("success")
   }
-
-  dl_dir_len <- nchar(download_dir)
-
-  download_dir <- ifelse(substr(download_dir, dl_dir_len, dl_dir_len) == "/",
-                         substr(download_dir, 0, (dl_dir_len - 1)),
-                         download_dir)
 
   src_file <- paste0(pkg$Package, "_", pkg$Version, ".tar.gz")
-
   src_loc <- paste(download_dir, pkg$Package, src_file, sep = "/")
 
-  if (!dir.exists(download_dir)) {
-    message(sprintf("%s Dir not found...creating...", download_dir))
-    dir.create(download_dir, recursive = T)
-    if (!dir.exists(download_dir)) {
-      stop("Error: Permissions are incorrect on mattlib directory")
-    }
-  }
-
-  if (!dir.exists(paste0(download_dir, "/", pkg$Package))) {
-    message(sprintf("%s Dir not found...creating...",
-                    paste0(download_dir, "/", pkg$Package)))
-    dir.create(paste0(download_dir, "/", pkg$Package))
-  }
-
   if (file.exists(src_loc) && file.size(src_loc) > 0) {
-    message(sprintf("File for %s already exists...skipping....", pkg$Package))
+    message(sprintf("File for %s already exists...skipping...\n", pkg$Package))
     return("success")
   }
 
-  if (pkg$Repository == "CRAN") {
-    message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
-    result <- try({suppressWarnings(download.file(pkg$link, src_loc, "wget",
-                                                  quiet = quiet))})
-  }
+  dir.create(paste(download_dir, pkg$Package, sep = "/"),
+             recursive = T, showWarnings = F)
 
-  if (!exists("result") || (inherits(result, 'try-error') || result != 0) &&
-      !is.null(pkg$GithubUsername) && pkg$GithubUsername != "") {
+  message(sprintf("Downloading %s from: %s...", pkg$Package, pkg$link))
+
+  auth_string <- sprintf("--header='Authorization: token %s'", github_pat)
+
+  result <- download.file(pkg$link, src_loc, method = "wget", quiet = quiet,
+                          extra = ifelse(grepl("api.github", x = pkg$link) &&
+                                           !is.na(github_pat), auth_string, ""))
+
+  if (result != 0 || file.size(src_loc) == 0) {
     system(sprintf("rm -rf %s", src_loc))
-    message(sprintf("Cloning %s via git...", pkg$Package))
-
-    if (!is.na(github_pat) | Sys.getenv("GITHUB_PAT") != "") {
-      message("Attempting github download using PAT key... ")
-      github_pat <- ifelse(is.na(github_pat), Sys.getenv("GITHUB_PAT"), github_pat)
-      git_link <- sprintf("wget --header='Authorization: token %s' \\
-                          https://api.github.com/repos/%s/%s/tarball/%s -O %s",
-                          github_pat, pkg$GithubUsername, pkg$GithubRepo,
-                          pkg$Version, src_loc)
-      system(git_link)
-      if (file.size(src_loc) == 0) {
-        warning(sprintf("Warning: github version %s for %s not found...attempting
-                        to download from master", pkg$Version, pkg$Package))
-        git_link <- sprintf("wget --header='Authorization: token %s' \\
-                          https://api.github.com/repos/%s/%s/tarball/%s -O %s",
-                            github_pat, pkg$GithubUsername, pkg$GithubRepo,
-                            "master", src_loc)
-        system(git_link)
-      }
-    }else{
-      git_link <- (sprintf("wget https://github.com/%s/%s/archive/master.tar.gz -O %s",
-                           pkg$GithubUsername, pkg$GithubRepo, src_loc))
-      system(git_link)
-    }
-    result <- 0
+    stop(sprintf("Error: Sources not found for %s from %s...Exiting", pkg$Package, pkg$Link))
   }
 
-  if (result == 0) {
-    message(sprintf("%s Downloaded successfully...\n", pkg$Package))
-  }else{
-    stop(sprintf("Error downloading package: %s...\n", pkg$Package))
-  }
-  return('success')
+  message(sprintf("%s Downloaded successfully...\n", pkg$Package))
+  return("success")
+
 }

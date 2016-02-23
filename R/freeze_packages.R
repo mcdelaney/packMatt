@@ -36,12 +36,13 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 }
 
 gather_package_info <- function(package, all_pkgs){
-  info <- packageDescription(package, fields = c("Package", "Version", "Depends", "LinkingTo",
-                                                 "GithubRepo", "GithubUsername",
-                                                 "Repository", "Imports", "URL"))
+  info <- packageDescription(package,
+                             fields = c("Package", "Version", "Depends", "LinkingTo",
+                                        "GithubRepo", "GithubUsername", "Repository",
+                                        "Imports", "GithubSHA1"))
 
   info$type <- ifelse(paste0(.Library, "/",info$Package) == find.package(info$Package),
-                        "base", "external")
+                      "base", "external")
 
   for (col in c("Imports", "Depends", "LinkingTo")) {
     info[[col]] <- unique(unlist(lapply(X = info[[col]], FUN = split_depends, all_pkgs = all_pkgs)))
@@ -78,7 +79,7 @@ make_dcf_file_df <- function(info) {
 
   for (pkg_row in c(1:length(info))) {
     pkg <- info[pkg_row][[1]]
-    for (df_name in names(df)){
+    for (df_name in names(df)) {
       if (df_name %in% names(pkg)) {
         df[pkg_row, df_name] <- paste(pkg[[df_name]], collapse = ",")
       }else{
@@ -92,8 +93,7 @@ make_dcf_file_df <- function(info) {
   }))
 
   df <- df[order(df$depcount),]
-
-  # df <- df[,names(df) %in% c("depcount")]
+  df <- df[,!names(df) %in% c("depcount")]
 
   return(df)
 }

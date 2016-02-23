@@ -1,4 +1,4 @@
-# library(packMatt)
+
 TEST_LIB = "mattlib"
 
 prep_test_lib <- function(test_lib = "mattlib"){
@@ -15,17 +15,10 @@ test_the_stuff <- function(test_lib = 'mattlib'){
 }
 
 library(ggplot2); library(DelightfulFunctions)
+lock_file_loc = "mattpack.lock"
 prep_test_lib(test_lib = TEST_LIB)
-.libPaths(c("mattlib/lib/", .Library))
 freeze_packages(lock_file_loc = "mattpack.lock")
-thaw_mattpack(lock_file_loc = "mattpack.lock")
+.libPaths(c("mattlib/lib/", .Library))
 deploy_lib(mattlib_loc = 'mattlib', lock_file_loc = "mattpack.lock")
-
-# test_the_stuff()
 system("rm .Rprofile")
 
-# lock_file_loc <- "mattpack.lock"
-# freeze_packages(lock_file_loc = lock_file_loc)
-# thaw_mattpack(lock_file_loc = lock_file_loc)
-#
-# deploy_lib(mattlib_loc = 'mattlib', lock_file_loc = "mattpack.lock")

@@ -4,10 +4,10 @@
 \alias{create_r_profile}
 \title{create_r_profile}
 \usage{
-create_r_profile(mattlib_loc = "mattlib/lib/")
+create_r_profile(proj_lib = "proj_lib/lib/")
 }
 \arguments{
-\item{mattlib_loc}{Location where mattlib is found}
+\item{proj_lib}{Location where project library is found}
 }
 \description{
 Creates the project specific Rprofile.

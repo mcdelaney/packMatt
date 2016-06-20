@@ -5,11 +5,12 @@
 #' @export
 #'
 
-freeze_packages <- function(lock_file_loc = "mattpack.lock"){
+freeze_packages <- function(lock_file_loc = "proj_lib.lock"){
 
   options(stringsAsFactors = FALSE)
 
   all_pkgs <- as.character(installed.packages()[,"Package"])
+  # all_pkgs <- pkg[!'packMatt' %in% pkg]
   packages <- gsub("package:", "", search()[grepl("package:", search())])
 
   dep.env <<- new.env()
@@ -32,7 +33,7 @@ freeze_packages <- function(lock_file_loc = "mattpack.lock"){
 
   info <- packMatt:::make_dcf_file_df(info = info)
   write.dcf(info, file = lock_file_loc, indent = 4)
-  message("MattPack lock file successfully created....")
+  message("Project lock file successfully created....")
 }
 
 gather_package_info <- function(package, all_pkgs){

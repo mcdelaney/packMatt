@@ -4,13 +4,17 @@
 \alias{deploy_lib}
 \title{deploy_lib}
 \usage{
-deploy_lib(mattlib_loc = "mattlib", lock_file_loc = "mattpack.lock",
-  do_thaw = FALSE)
+deploy_lib(proj_lib = "proj_lib", lock_file_loc = "proj_lib.lock",
+  do_thaw = TRUE, redeploy = TRUE)
 }
 \arguments{
-\item{mattlib_loc}{Directory where src packages should be installed.}
+\item{proj_lib}{Directory where src packages should be installed.}
 
-\item{lock_file_loc}{Location where mattpack lockfile is found.}
+\item{lock_file_loc}{Location where project lockfile is found.}
+
+\item{do_thaw}{Should packmatt download the src files? Default: True}
+
+\item{redeploy}{Should packmatt redploy from scratch? Default: True}
 }
 \description{
 Deploys the package sources to the mattlib and sets an .Rprofile

@@ -1,13 +1,10 @@
 #' @title prep_package_links
 #' @description Prepares lock file to be collected by generating urls for download.
-#' @param lock_file_loc Path to mattpack lock file.
+#' @param lock_file_loc Path to proj_lib lock file.
 
-prep_package_links <- function(lock_file_loc = 'mattpack.lock'){
+prep_package_links <- function(lock_file_loc = 'proj_lib.lock'){
 
   options(c(stringsAsFactors = FALSE, repos = "https://cran.rstudio.com"))
-
-  if (!file.exists(lock_file_loc)) { stop('Error: lock file does not exist...Exiting')}
-
   packages <- read.dcf(normalizePath(lock_file_loc))
 
   info <- apply(packages, MARGIN = 1, FUN = get_pkg_dl_link,

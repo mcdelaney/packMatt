@@ -4,7 +4,7 @@
 \alias{freeze_packages}
 \title{freeze_packages}
 \usage{
-freeze_packages(lock_file_loc = "mattpack.lock")
+freeze_packages(lock_file_loc = "proj_lib.lock")
 }
 \description{
 Produces a lockfile with specifications of all currently loaded packages.

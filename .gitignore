@@ -4,7 +4,7 @@
 .Ruserdata
 test-lib/
 .Rprofile
-mattlib/
-mattpack.lock
+proj_lib/
+proj_lib.lock
 dev/
 full-test/

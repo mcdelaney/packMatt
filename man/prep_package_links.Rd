@@ -4,10 +4,10 @@
 \alias{prep_package_links}
 \title{prep_package_links}
 \usage{
-prep_package_links(lock_file_loc = "mattpack.lock")
+prep_package_links(lock_file_loc = "proj_lib.lock")
 }
 \arguments{
-\item{lock_file_loc}{Path to mattpack lock file.}
+\item{lock_file_loc}{Path to proj_lib lock file.}
 }
 \description{
 Prepares lock file to be collected by generating urls for download.

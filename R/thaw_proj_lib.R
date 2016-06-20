@@ -1,14 +1,12 @@
-#'thaw_mattpack
-#'
-#' @title thaw_mattpack
+#' @title thaw_proj_lib
 #' @description Collects source files for all packages specified in lockfile.
-#' @param lock_file_loc Path to mattpack lock file.
+#' @param lock_file_loc Path to project lock file.
 #' @param github_pat Github Pat.  Optional and only used if downloaded from a private repo.
 #' @param quiet Logical; Should download.file return verbose output? Optional.
 #' @export
 #'
 
-thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', github_pat = NA,
+thaw_proj_lib <- function(lock_file_loc = 'proj_lib.lock', github_pat = NA,
                           quiet = TRUE){
 
   options(stringsAsFactors = FALSE)
@@ -19,7 +17,7 @@ thaw_mattpack <- function(lock_file_loc = 'mattpack.lock', github_pat = NA,
                        Sys.getenv("GITHUB_PAT"), github_pat)
 
   results <- mapply(pkg = packages, FUN = packMatt:::download_pkg,
-                    download_dir = "mattlib/src", quiet = quiet,
+                    download_dir = "proj_lib/src", quiet = quiet,
                     github_pat = github_pat)
 
   if (!all(results == "success")) {
